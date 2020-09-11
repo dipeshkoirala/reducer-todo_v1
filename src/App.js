@@ -1,56 +1,36 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
-import './App.css';
+import React, { useReducer } from "react";
+
+import TodoItems from "./components/TodoItems";
+import { useDarkMode } from "./components/MyMode";
+import { is, TitleReducer } from "./reducer";
+import "./App.css";
 
 function App() {
-  const [date, setDate] = useState(null);
-  useEffect(() => {
-    async function getDate() {
-      const res = await fetch('/api/date');
-      const newDate = await res.text();
-      setDate(newDate);
-    }
-    getDate();
-  }, []);
+  const [darkMode, setDarkMode] = useDarkMode(false);
+  const [state, dispatch] = useReducer(TitleReducer, is);
+  const toggleMode = (e) => {
+    e.preventDefault();
+    setDarkMode(!darkMode);
+  };
   return (
-    <main>
-      <h1>Create React App + Go API</h1>
-      <h2>
-        Deployed with{' '}
-        <a
-          href="https://vercel.com/docs"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          Vercel
-        </a>
-        !
-      </h2>
-      <p>
-        <a
-          href="https://github.com/vercel/vercel/tree/master/examples/create-react-app"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          This project
-        </a>{' '}
-        was bootstrapped with{' '}
-        <a href="https://facebook.github.io/create-react-app/">
-          Create React App
-        </a>{' '}
-        and contains three directories, <code>/public</code> for static assets,{' '}
-        <code>/src</code> for components and content, and <code>/api</code>{' '}
-        which contains a serverless <a href="https://golang.org/">Go</a>{' '}
-        function. See{' '}
-        <a href="/api/date">
-          <code>api/date</code> for the Date API with Go
-        </a>
-        .
+    <div className={darkMode ? "dark-mode App" : "App"}>
+      <p className="myP bg-danger p-3 m-2">
+        {state.length}:
+        {state.map((item) => {
+          return <span>{item.item}</span>;
+        })}
       </p>
-      <br />
-      <h2>The date according to Go is:</h2>
-      <p>{date ? date : 'Loading date...'}</p>
-    </main>
+      <h1 className="header bg-primary m-3 p-3">
+        Reducer TODO
+        <span className="dark-mode__toggle bg-info float-right">
+          <div
+            onClick={toggleMode}
+            className={darkMode ? "toggle toggled" : "toggle"}
+          />
+        </span>
+      </h1>
+      <TodoItems />
+    </div>
   );
 }
 
